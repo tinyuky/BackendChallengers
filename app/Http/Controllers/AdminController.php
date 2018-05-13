@@ -4,9 +4,12 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\User;
+use Validator;
+use Illuminate\Validation\Rule;
 
 class AdminController extends Controller
 {
+    //Get all accounts function
     public function getall(Request $request){
         try{
             return User::all();
@@ -15,6 +18,7 @@ class AdminController extends Controller
             return response()->json(['error'=>'Connect database fail'],400);
         }
     }
+    //Get account from id function
     public function get($id){   
         try{
             return User::find($id);
@@ -23,8 +27,25 @@ class AdminController extends Controller
             return response()->json(['error'=>'Connect database fail'],400);
         }
     }
+    //Add account function
     public function add(Request $request){
-        try{
+        //Validate data
+        $messages = [
+            'email.unique' => 'Email đã sử dụng',
+            'staffid.unique' => 'Mã nhân viên đã sử dụng',
+        ];
+        $validator = Validator::make($request->all(), [
+            'staffid' =>'required|unique:users,staffid|',
+            'name' => 'required',
+            'email' => 'required|unique:users,email',
+            'otheremail' => 'required|email',
+            'password'=>'required',
+            'phone1'=>'required',
+            'phone2'=>'required',
+            'role'=>'required',           
+        ],$messages)->validate();  
+        
+        //Add account to database
             $user = new User;
             $user->staffid = $request->input('staffid');
             $user->name = $request->input('name');
@@ -36,15 +57,35 @@ class AdminController extends Controller
             $user->status = 'active';
             $user->role = $request->input('role');
             $user->save();
-            return response()->json(['message'=>'Add account success']);
-        }
-        catch(Exception $e){
-            return response()->json(['error'=>'Add account fail'],400);
-        }
+            return response()->json(['message'=>'Add account success']);    
     }
+    //Edit account function
     public function update(Request $request){
-        try{
-            $user = User::find($request->input('id'));
+        $user = User::find($request->input('id'));
+        
+        $messages = [
+            'email.unique' => 'Email đã sử dụng',
+            'staffid.unique' => 'Mã nhân viên đã sử dụng',
+        ];
+        $validator = Validator::make($request->all(), [
+            'staffid' => [
+                'required',
+                Rule::unique('users')->ignore($user->id),
+            ],
+            'email' => [
+                'required',
+                Rule::unique('users')->ignore($user->id),
+            ],
+            'name' => 'required',
+            'otheremail' => 'required|email',
+            'password'=>'required',
+            'phone1'=>'required',
+            'phone2'=>'required',
+            'role'=>'required',
+            'status'=>'required',        
+        ],$messages)->validate();
+
+            
             $user->staffid = $request->input('staffid');
             $user->name = $request->input('name');
             $user->email = $request->input('email');
@@ -56,9 +97,5 @@ class AdminController extends Controller
             $user->role = $request->input('role');
             $user->save();
             return response()->json(['message'=>'Update account success']);
-        }
-        catch(Exception $e){
-            return response()->json(['error'=>'Update account fail'],400);
-        }
     }
 }
