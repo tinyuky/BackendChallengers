@@ -2,14 +2,20 @@
 
 use Illuminate\Http\Request;
 Route::group([
+    'prefix' => 'auth'
+],function($router){    
+    Route::post('login', 'AuthController@login');
+    Route::post('logout', 'AuthController@logout');
+});
+
+Route::group([
     'prefix' => 'admin',
     'middleware'=>'auth.jwtad'
-],function($router){
-    Route::post('logout', 'AdminController@logout');
-    Route::post('add','AdminController@add');
-    Route::post('update','AdminController@update');
-    Route::get('getall', 'AdminController@getall');
-    Route::get('get/{id}','AdminController@get');
-    Route::delete('delete/{id}','AdminController@deactive');
+],function($router){    
+    Route::post('addaccount','AdminController@add');
+    Route::post('updateaccount','AdminController@update');
+    Route::get('getallaccounts', 'AdminController@getall');
+    Route::get('getaccount/{id}','AdminController@get');
 });
-Route::post('login', 'LoginController@login');
+
+

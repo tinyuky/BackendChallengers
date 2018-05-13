@@ -29,9 +29,10 @@ class AdminController extends Controller
             $user->staffid = $request->input('staffid');
             $user->name = $request->input('name');
             $user->email = $request->input('email');
-            $user->personalemail = $request->input('personalemail');
+            $user->otheremail = $request->input('otheremail');
             $user->password = bcrypt($request->input('password'));
-            $user->phone = $request->input('phone');
+            $user->phone1 = $request->input('phone1');
+            $user->phone2 = $request->input('phone2');
             $user->status = 'active';
             $user->role = $request->input('role');
             $user->save();
@@ -47,10 +48,11 @@ class AdminController extends Controller
             $user->staffid = $request->input('staffid');
             $user->name = $request->input('name');
             $user->email = $request->input('email');
-            $user->personalemail = $request->input('personalemail');
+            $user->otheremail = $request->input('otheremail');
             $user->password = bcrypt($request->input('password'));
-            $user->phone = $request->input('phone');
-            $user->status = 'active';
+            $user->phone1 = $request->input('phone1');
+            $user->phone2 = $request->input('phone2');
+            $user->status = $request->input('status');
             $user->role = $request->input('role');
             $user->save();
             return response()->json(['message'=>'Update account success']);
@@ -58,22 +60,5 @@ class AdminController extends Controller
         catch(Exception $e){
             return response()->json(['error'=>'Update account fail'],400);
         }
-    }
-    public function deactive($id){
-        try{
-            $user = User::find($id);
-            $user->status = 'deactive';
-            $user->save();
-            return response()->json(['message'=>'Deactive account success']);
-        }
-        catch(Exception $e){
-            return response()->json(['error'=>'Deactive account fail'],400);
-        }
-    }
-
-    public function logout()
-    {
-        auth()->logout();
-        return response()->json(['message' => 'Successfully logged out']);
     }
 }

@@ -18,9 +18,10 @@ class CreateUsersTable extends Migration
             $table->string('staffid')->unique();
             $table->string('name');
             $table->string('email')->unique();
-            $table->string('personalemail')->unique();
+            $table->string('otheremail');
             $table->string('password');
-            $table->decimal('phone');
+            $table->string('phone1');
+            $table->string('phone2');
             $table->string('status');
             $table->string('role');
             $table->rememberToken();
