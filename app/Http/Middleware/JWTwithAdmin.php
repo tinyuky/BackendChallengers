@@ -18,20 +18,18 @@ class JWTwithAdmin extends \Tymon\JWTAuth\Http\Middleware\BaseMiddleware
     public function handle($request, Closure $next)
     {
         $this->authenticate($request);
-        if(!$this->checkaccount($request)){
+        if (!$this->checkaccount($request)) {
             auth()->logout();
-            return response()->json(['error'=>'Token is rejected'],400);
+            return response()->json(['error' => 'Token is rejected', 'action' => 'login'], 400);
         }
         return $next($request);
     }
     public function checkaccount($request)
     {
         $user = JWTAuth::parseToken()->authenticate($request);
-        if(($user->role === 'admin') && ($user->status === 'active'))
-        {
+        if (($user->role === 'admin') && ($user->status == true)) {
             return true;
-        }
-        else{
+        } else {
             return false;
         }
     }

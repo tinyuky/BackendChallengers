@@ -46,16 +46,14 @@ class Handler extends ExceptionHandler
      */
     public function render($request, Exception $exception)
     {
-        if($exception instanceof \Tymon\JWTAuth\Exceptions\TokenInvalidException){
-            return response()->json(['error'=>'Token is invalid'],400);
-        }
-        elseif($exception instanceof \Tymon\JWTAuth\Exceptions\TokenExpiredException) {
-            return response()->json(['error'=>'Token is expired'],400);
-        }
-        elseif($exception instanceof \Tymon\JWTAuth\Exceptions\JWTException){
-            return response()->json(['error'=>'Token is invalid'],400);
-        } elseif($exception instanceof UnauthorizedHttpException){
-            return response()->json(['error'=>'Token is invalid'],400);
+        if ($exception instanceof \Tymon\JWTAuth\Exceptions\TokenInvalidException) {
+            return response()->json(['error' => 'Token is invalid', 'action' => 'login'], 400);
+        } elseif ($exception instanceof \Tymon\JWTAuth\Exceptions\TokenExpiredException) {
+            return response()->json(['error' => 'Token is expired', 'action' => 'login'], 400);
+        } elseif ($exception instanceof \Tymon\JWTAuth\Exceptions\JWTException) {
+            return response()->json(['error' => 'Token is invalid', 'action' => 'login'], 400);
+        } elseif ($exception instanceof UnauthorizedHttpException) {
+            return response()->json(['error' => 'Token is invalid', 'action' => 'login'], 400);
         }
         return parent::render($request, $exception);
     }

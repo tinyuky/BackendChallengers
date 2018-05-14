@@ -2,52 +2,51 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Http\Request;
-use JWTAuth;
 use App\User;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class AuthController extends Controller
-{  
-    //Confi middleware for controller 
+{
+    //Confi middleware for controller
     public function __construct()
     {
-        $this->middleware('auth:api',['except'=>['login']]);
-    } 
+        $this->middleware('auth:api', ['except' => ['login']]);
+    }
     //Login fuction
     //Check remember token -> check account -> response JSON
     public function login(Request $request)
     {
         //Check remember token
         //True
-        if(auth()->user()){
+        if (auth()->user()) {
             //Check account
             $user = auth()->user();
             //Active
-            if($user['status']=='active'){
+            if ($user['status'] == true) {
                 //refresh a new token and response JSON
                 $newtoken = auth()->refresh();
                 return $this->respondWithToken($newtoken);
             }
             //Deactive
-            else{           
-                return response()->json(['error' => 'Sorry token is deactive'], 401);
+            else {
+                return response()->json(['error' => 'token is deactive','action'=>'login'], 401);
             }
         }
         //False
-        else{
+        else {
             //Check account by attempt (email, password, status)
             $credentials = request(['email', 'password']);
-            $credentials['status']= 'active';
+            $credentials['status'] = true;
             //Deactive
-            if (! $token = auth()->setTTL(21600)->attempt($credentials)) {
+            if (!$token = auth()->setTTL(21600)->attempt($credentials)) {
                 //response
-                return response()->json(['error' => "Sorry account is not correct or deactive"], 401);
+                return response()->json(['error' => "account is not correct",'action'=>'login'], 401);
             }
             //Active
             //response
             return $this->respondWithToken($token);
-        }               
+        }
     }
 
     //Construct of JSON
@@ -55,10 +54,10 @@ class AuthController extends Controller
     {
         $user = auth()->user();
         return response()->json([
-            'user' => $user,
+            'name' => $user->name,
+            'email'=>$user->email,
+            'role'=>$user->role,
             'access_token' => $token,
-            'token_type' => 'bearer',
-            'expires_in' => auth()->factory()->getTTL().' minutes'
         ]);
     }
 
@@ -66,6 +65,12 @@ class AuthController extends Controller
     public function logout()
     {
         auth()->logout();
-        return response()->json(['message' => 'Successfully logged out'],200);
+        return response()->json(['message' => 'Successfully logged out'], 200);
+    }
+
+    //Get user from token
+    public function me()
+    {
+        return response()->json(auth()->user());
     }
 }
