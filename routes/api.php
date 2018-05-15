@@ -13,10 +13,10 @@ Route::group([
     'prefix' => 'admin',
     'middleware'=>'auth.jwtad'
 ],function($router){    
-    Route::post('addaccount','AdminController@add');
-    Route::post('updateaccount','AdminController@update');
-    Route::get('getallaccounts', 'AdminController@getall');
-    Route::get('getaccount/{id}','AdminController@get');
+    Route::post('addAccount','AdminController@add');
+    Route::post('updateAccount','AdminController@update');
+    Route::get('getAllAccounts', 'AdminController@getall');
+    Route::get('getAccount/{id}','AdminController@get');
 });
 
 

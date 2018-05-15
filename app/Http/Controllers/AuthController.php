@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Http\Resources\User as UserResource;
 
 class AuthController extends Controller
 {
@@ -36,7 +37,8 @@ class AuthController extends Controller
         //False
         else {
             //Check account by attempt (email, password, status)
-            $credentials = request(['email', 'password']);
+            $credentials['email'] = $request['Email'];
+            $credentials['password'] = $request['Password'];
             $credentials['status'] = true;
             //Deactive
             if (!$token = auth()->setTTL(21600)->attempt($credentials)) {
@@ -54,9 +56,9 @@ class AuthController extends Controller
     {
         $user = auth()->user();
         return response()->json([
-            'name' => $user->name,
-            'email'=>$user->email,
-            'role'=>$user->role,
+            'Name' => $user->name,
+            'Email'=>$user->email,
+            'Role'=>$user->role,
             'access_token' => $token,
         ]);
     }
@@ -71,6 +73,6 @@ class AuthController extends Controller
     //Get user from token
     public function me()
     {
-        return response()->json(auth()->user());
+        return new UserResource(auth()->user());
     }
 }
