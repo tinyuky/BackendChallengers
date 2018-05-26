@@ -24,7 +24,7 @@ Route::group([
     'middleware'=>'auth.jwtass'
 ],function($router){
     Route::post('handleFile','StudentController@handle');    
-    Route::get('importFile','StudentController@import'); 
+    Route::get('importFile/{name}','StudentController@import'); 
     Route::get('exportTem', 'StudentController@export');
 
 });

@@ -47,12 +47,12 @@ class StudentController extends Controller
                     $erstt .= 'Lớp không tồn tại';
                 }
                 else{
-                    $findgr = Grades::where('id',$findcl->grade_id)->first();
+                    $findgr = Grades::where('name',$row['khoi'])->first();
                     if(empty($findgr)){
                         $count += 1;
                         $erstt .= 'Khối không tồn tại';
                     }
-                    elseif($findgr->name != $row['khoi']){
+                    elseif($findgr->id != $findcl->grade_id){
                         $count += 1;
                         $erstt .= 'Khối và lớp không quan hệ';
                     }
@@ -66,9 +66,9 @@ class StudentController extends Controller
         $rs = [];
         $rs['ErrorCount'] = $count;
         $rs['File'] = $filename;
-        if($count>0){
+        if($count > 0){
             $rs['File'] = '';
-            Storage::delete(Storage::disk('public_uploads')->getDriver()->getAdapter()->getPathPrefix().$filename);
+            Storage::disk('public_uploads')->delete($filename);
         }
         $rs['Students'] = $students;
         return response()->json($rs);
@@ -81,18 +81,21 @@ class StudentController extends Controller
             $new = new Students();
             $new->student_id = $row['ma_sv'];
             $new->name = $row['ho_ten_sinh_vien'].$row['ten'];
-            $new->dob = $row['ngay_sinh'];
+            $new->dob = date('Y-m-d', strtotime($row['ngay_sinh']));
             $findcl = Classes::where('name',$row['lop'])->first();
             $new->class_id = $findcl->id;
-            $new->gender = $row['phai'];
+            // $new->gender = $row['phai'];
             $new->pob= $row['noi_sinh'];
             $new->code1 = $row['ma_khoa'];
             $new->code2 = $row['ma_nganh'];
-            $new->node = $row['ghi_chu'];
+            $new->note = $row['ghi_chu'];
+            if(empty($row['ghi_chu'])){
+                $new->note = '';
+            }
             $new->status = 1;
             $new->save();
         }
-        Storage::delete(Storage::disk('public_uploads')->getDriver()->getAdapter()->getPathPrefix().$filename);
+        Storage::disk('public_uploads')->delete($filename);
         return response()->json('Add success');
     }
 
