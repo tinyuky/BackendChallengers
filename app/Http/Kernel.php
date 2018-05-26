@@ -62,5 +62,6 @@ class Kernel extends HttpKernel
         'signed' => \Illuminate\Routing\Middleware\ValidateSignature::class,
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
         'auth.jwtad' => \App\Http\Middleware\JWTwithAdmin::class,
+        'auth.jwtass' => \App\Http\Middleware\JWTwithAssistant::class,
     ];
 }

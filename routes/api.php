@@ -19,4 +19,13 @@ Route::group([
     Route::get('getAccount/{id}','AdminController@get');
 });
 
+Route::group([
+    'prefix' => 'assistant',
+    'middleware'=>'auth.jwtass'
+],function($router){
+    Route::post('handleFile','StudentController@handle');    
+    Route::get('importFile','StudentController@import'); 
+    Route::get('exportTem', 'AdminController@exportTemp');
+});
+
 
