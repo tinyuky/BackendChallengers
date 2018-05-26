@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Students;
 use App\Grades;
 use App\Classes;
+use Excel;
 use File;
 use Illuminate\Support\Facades\Storage;
 
@@ -18,7 +19,7 @@ class StudentController extends Controller
         $data = Excel::load(Storage::disk('public_uploads')->getDriver()->getAdapter()->getPathPrefix().$filename, function($reader) {
         })->get();
         $students = [];
-        $err = 0;
+        $count = 0;
         foreach($data as $row ){
             $erstt = '';
             $new = [];
@@ -34,35 +35,39 @@ class StudentController extends Controller
             $new['Code2'] = $row['ma_nganh'];
             $new['Note'] = $row['ghi_chu'];
             
-            $findst = Students::where('student_id',$row['ma_sv'])->first();
-            $findcl = Classes::where('name',$row['lop'])->first();
-            $findgr = Grades::where('id',$findcl->grade_id)->first();
-
+            $findst = Students::where('student_id',$row['ma_sv'])->first();           
             if(!empty($findst)){
-                $err += 1;
-                $erstt .= 'Mã sinh viên đã tồn tại-';
+                $count += 1;
+                $erstt .= 'Mã sinh viên đã tồn tại';
             }
-            if(empty($findcl)){
-                $err += 1;
-                $erstt .= 'Lớp không tồn tại-';
+            else{
+                $findcl = Classes::where('name',$row['lop'])->first();
+                if(empty($findcl)){
+                    $count += 1;
+                    $erstt .= 'Lớp không tồn tại';
+                }
+                else{
+                    $findgr = Grades::where('id',$findcl->grade_id)->first();
+                    if(empty($findgr)){
+                        $count += 1;
+                        $erstt .= 'Khối không tồn tại';
+                    }
+                    elseif($findgr->name != $row['khoi']){
+                        $count += 1;
+                        $erstt .= 'Khối và lớp không quan hệ';
+                    }
+                }
             }
-            if(empty($findgr)){
-                $err += 1;
-                $erstt .= 'Khối không tồn tại-';
-            }
-            if($findgr->name != $row['khoi']){
-                $err += 1;
-                $erstt .= 'Khối và lớp không quan hệ-';
-            }
-            $new['Error'] = explode('-',$erstt);
+
+            $new['Error'] = $erstt;
             $students = $new;
         }
 
         $rs = [];
-        $rs['ErrorCount'] = $err;
+        $rs['ErrorCount'] = $count;
         $rs['File'] = $filename;
-        if($err>0){
-            $rs['ErrorCount'] = '';
+        if($count>0){
+            $rs['File'] = '';
             Storage::delete(Storage::disk('public_uploads')->getDriver()->getAdapter()->getPathPrefix().$filename);
         }
         $rs['Students'] = $students;
@@ -92,6 +97,6 @@ class StudentController extends Controller
     }
 
     public function export(){
-
+        
     }
 }

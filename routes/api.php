@@ -25,7 +25,8 @@ Route::group([
 ],function($router){
     Route::post('handleFile','StudentController@handle');    
     Route::get('importFile','StudentController@import'); 
-    Route::get('exportTem', 'AdminController@exportTemp');
+    Route::get('exportTem', 'StudentController@export');
+
 });
 
 

@@ -3,8 +3,9 @@
 namespace App\Http\Middleware;
 
 use Closure;
+use JWTAuth;
 
-class JWTwithAssistant
+class JWTwithAssistant extends \Tymon\JWTAuth\Http\Middleware\BaseMiddleware
 {
     public function handle($request, Closure $next)
     {
