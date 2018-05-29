@@ -23,10 +23,21 @@ Route::group([
     'prefix' => 'assistant',
     'middleware'=>'auth.jwtass'
 ],function($router){
-    Route::post('handleFile','StudentController@handle');    
-    Route::get('importFile/{name}','StudentController@import'); 
-    Route::get('exportTem', 'StudentController@export');
+    Route::post('addGrade','GradesController@add');
+    Route::post('updateGrade','GradesController@update');
+    Route::get('getGrade/{id}','GradesController@get');
+    Route::get('getAllGrades','GradesController@getall');
 
+    Route::post('addClass','ClassesController@add');
+    Route::post('updateClass','ClassesController@update');
+    Route::get('getClass/{id}','ClassesController@get');
+    Route::get('getAllClasses','ClassesController@getall');
+
+    Route::post('handleFile','StudentsController@handle');    
+    Route::get('importFile/{name}','StudentsController@import'); 
+    Route::post('updateStudent','StudentsController@update');
+    Route::get('getStudent/{id}','StudentsController@get');
+    Route::get('getAllStudents','StudentsController@getall');
 });
 
 

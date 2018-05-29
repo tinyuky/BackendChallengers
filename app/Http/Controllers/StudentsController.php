@@ -9,8 +9,9 @@ use App\Classes;
 use Excel;
 use File;
 use Illuminate\Support\Facades\Storage;
+use App\Http\Resources\Students as StudentsResource;
 
-class StudentController extends Controller
+class StudentsController extends Controller
 {
     public function handle(Request $request){
         $file = $request->file('File');
@@ -101,5 +102,25 @@ class StudentController extends Controller
 
     public function export(){
         
+    }
+
+    public function update(Request $request){
+        $db = Students::find($request['Id']);
+        $db->student_id = $request->input('StudentId');
+        $db->name = $request->input('Name');
+        $db->dob = date('Y-m-d', strtotime($request->input('Dob')));
+        $db->pob = $request->input('Pob');
+        $db->code1 = $request->input('Code1');
+        $db->code2 = $request->input('Code2');
+        $db->note = $request->input('Note');
+        $db->status = $request->input('Status');
+        $db->save();
+        return response()->json(['message'=>'Update Success'], 200);
+    }
+    public function get($id){
+        return new StudentsResource(Students::find($id));
+    }
+    public function getall(){
+        return StudentsResource::collection(Students::all());
     }
 }
